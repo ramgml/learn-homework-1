@@ -14,7 +14,15 @@ def ask_user():
     """
     Замените pass на ваш код
     """
-    pass
-    
+    dialog = {"Как дела": "Хорошо!", "Что делаешь?": "Программирую"}
+    while True:
+        try:
+            question = input()
+            if question in dialog:
+                print(dialog[question])
+        except KeyboardInterrupt:
+            print('Пока!')
+            break
+
 if __name__ == "__main__":
     ask_user()
