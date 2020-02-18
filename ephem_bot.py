@@ -13,7 +13,8 @@
 
 """
 import logging
-
+import ephem
+from datetime import datetime
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
@@ -41,13 +42,26 @@ def talk_to_me(bot, update):
     user_text = update.message.text 
     print(user_text)
     update.message.reply_text(user_text)
- 
+
+
+def get_planet_constellation(bot, update):
+    message = update.message.text.split()
+    if len(message) > 1:
+        planet_name = message[1]
+        if hasattr(ephem, planet_name):
+            planet = getattr(ephem, planet_name)
+            m = planet(datetime.now())
+            short, full = ephem.constellation(m)
+            update.message.reply_text(full)
+
+
 
 def main():
     mybot = Updater("КЛЮЧ, КОТОРЫЙ НАМ ВЫДАЛ BotFather", request_kwargs=PROXY)
     
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler("start", greet_user))
+    dp.add_handler(CommandHandler("planet", get_planet_constellation))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     
     mybot.start_polling()
