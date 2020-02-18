@@ -15,11 +15,17 @@
     
 """
 
-def ask_user():
+def ask_user_dict():
     """
     Замените pass на ваш код
     """
-    pass
-    
+    dialogs = {"Как дела": "Хорошо!", "Что делаешь?": "Программирую"}
+    while True:
+        question = input()
+        if question in dialogs:
+            print(dialogs[question])
+        if question == 'Стоп':
+            break
+
 if __name__ == "__main__":
-    ask_user()
+    ask_user_dict()
