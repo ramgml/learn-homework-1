@@ -20,7 +20,7 @@ def main(arg1, arg2):
     Эта функция вызывается автоматически при запуске скрипта в консоли
     В ней надо заменить pass на ваш код
     """
-    if type(arg1) != str or type(arg2) != str:
+    if not isinstance(arg1, str) or not isinstance(arg2, str):
         return 0
 
     if arg1 == arg2:
