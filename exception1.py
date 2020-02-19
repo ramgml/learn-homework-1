@@ -18,8 +18,9 @@ def ask_user():
     while True:
         try:
             question = input()
-            if question in dialog:
-                print(dialog[question])
+            answer = dialog.get(question)
+            if answer:
+                print(answer)
         except KeyboardInterrupt:
             print('Пока!')
             break
