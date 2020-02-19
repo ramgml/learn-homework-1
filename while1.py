@@ -16,7 +16,8 @@ def ask_user():
     """
     while True:
         answer = input('Как дела? ')
-        if answer == 'Хорошо': return
+        if answer == 'Хорошо':
+            return
 
 
 if __name__ == "__main__":
