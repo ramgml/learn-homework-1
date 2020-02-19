@@ -19,11 +19,12 @@ def ask_user_dict():
     """
     Замените pass на ваш код
     """
-    dialogs = {"Как дела": "Хорошо!", "Что делаешь?": "Программирую"}
+    dialog = {"Как дела": "Хорошо!", "Что делаешь?": "Программирую"}
     while True:
         question = input()
-        if question in dialogs:
-            print(dialogs[question])
+        answer = dialog.get(question)
+        if answer:
+            print(answer)
         if question == 'Стоп':
             break
 
