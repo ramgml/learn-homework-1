@@ -13,7 +13,7 @@ import string
 import random
 
 
-def main(classes: list):
+def main(classes):
     """
     Эта функция вызывается автоматически при запуске скрипта в консоли
     В ней надо заменить pass на ваш код
@@ -21,9 +21,10 @@ def main(classes: list):
     sum_by_school = 0
     for school_class in classes:
         average_by_class = sum(school_class['scores']) / len(school_class['scores'])
-        print("Класс %s: %s)" % (school_class['school_class'], average_by_class))
+        print(f"Класс {school_class['school_class']}: {average_by_class}")
         sum_by_school += average_by_class
-    print('Средняя оценка по школе: ' + str(round(sum_by_school / len(classes), 1)))
+    average_by_school = round(sum_by_school / len(classes), 1)
+    print(f'Средняя оценка по школе: {average_by_school}')
 
 
 if __name__ == "__main__":
