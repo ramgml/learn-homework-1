@@ -46,14 +46,21 @@ def talk_to_me(bot, update):
 
 def get_planet_constellation(bot, update):
     message = update.message.text.split()
-    if len(message) > 1:
-        planet_name = message[1]
-        if hasattr(ephem, planet_name):
-            planet = getattr(ephem, planet_name)
-            m = planet(datetime.now())
-            short, full = ephem.constellation(m)
-            update.message.reply_text(full)
 
+    if len(message) < 1:
+        update.message.reply_text("Name of planet is missing")
+        return
+
+    planet_name = message[1]
+
+    if not hasattr(ephem, planet_name):
+        update.message.reply_text(f"I know nothing about {planet_name}")
+        return
+
+    planet = getattr(ephem, planet_name)
+    m = planet(datetime.now())
+    short, full = ephem.constellation(m)
+    update.message.reply_text(full)
 
 
 def main():
