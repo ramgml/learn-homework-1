@@ -19,7 +19,7 @@ def ask_user():
         try:
             question = input()
             answer = dialog.get(question)
-            if answer:
+            if answer is not None:
                 print(answer)
         except KeyboardInterrupt:
             print('Пока!')

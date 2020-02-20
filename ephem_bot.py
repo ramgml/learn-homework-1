@@ -58,8 +58,7 @@ def get_planet_constellation(bot, update):
         return
 
     planet = getattr(ephem, planet_name)
-    m = planet(datetime.now())
-    short, full = ephem.constellation(m)
+    short, full = ephem.constellation(planet(datetime.now()))
     update.message.reply_text(full)
 
 

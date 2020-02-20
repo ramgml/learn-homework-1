@@ -22,11 +22,11 @@ def ask_user_dict():
     dialog = {"Как дела": "Хорошо!", "Что делаешь?": "Программирую"}
     while True:
         question = input()
-        answer = dialog.get(question)
-        if answer:
-            print(answer)
         if question == 'Стоп':
             break
+        answer = dialog.get(question)
+        if answer is not None:
+            print(answer)
 
 if __name__ == "__main__":
     ask_user_dict()
