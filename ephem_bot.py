@@ -53,11 +53,12 @@ def get_planet_constellation(bot, update):
 
     planet_name = message[1]
 
-    if not hasattr(ephem, planet_name):
+    planet = getattr(ephem, planet_name, None)
+
+    if planet is None:
         update.message.reply_text(f"I know nothing about {planet_name}")
         return
 
-    planet = getattr(ephem, planet_name)
     short, full = ephem.constellation(planet(datetime.now()))
     update.message.reply_text(full)
 
