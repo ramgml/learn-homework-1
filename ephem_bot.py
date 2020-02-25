@@ -16,6 +16,7 @@ import logging
 import ephem
 from datetime import datetime
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from cities_game import Game
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
@@ -39,7 +40,7 @@ def greet_user(bot, update):
 
 
 def talk_to_me(bot, update):
-    user_text = update.message.text 
+    user_text = update.message.text
     print(user_text)
     update.message.reply_text(user_text)
 
@@ -63,14 +64,31 @@ def get_planet_constellation(bot, update):
     update.message.reply_text(full)
 
 
+def cities_game(bot, update):
+    try:
+        user_id = update.message.from_user.id
+        message = update.message.text.split()
+
+        if len(message) < 2:
+            update.message.reply_text('Укажите название города')
+            return
+
+        answer = Game(user_id, ' '.join(message[1:])).start()
+        update.message.reply_text(answer)
+    except Exception as e:
+        update.message.reply_text("Что-то пошло не так")
+        raise e
+
+
 def main():
     mybot = Updater("КЛЮЧ, КОТОРЫЙ НАМ ВЫДАЛ BotFather", request_kwargs=PROXY)
     
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(CommandHandler("planet", get_planet_constellation))
+    dp.add_handler(CommandHandler("cities", cities_game))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
-    
+
     mybot.start_polling()
     mybot.idle()
        
