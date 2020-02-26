@@ -63,12 +63,59 @@ def get_planet_constellation(bot, update):
     update.message.reply_text(full)
 
 
+def calculate(bot, update):
+    message = update.message.text.split()
+
+    if len(message) < 1:
+        update.message.reply_text("Забыли указать пример")
+        return
+
+    expression = ''.join(message[1:])
+    number = ''
+    expression_list = []
+    for symbol in expression:
+        if symbol.isdigit():
+            number += symbol
+        else:
+            expression_list.append(number)
+            expression_list.append(symbol)
+            number = ''
+    expression_list.append(number)
+
+    try:
+        if len(expression_list) < 3:
+            raise Exception("Неправильное выражение")
+
+        num1 = float(expression_list[0])
+        sign = expression_list[1]
+        num2 = float(expression_list[2])
+        result = None
+
+        if sign == '+':
+            result = num1 + num2
+        elif sign == '-':
+            result = num1 - num2
+        elif sign == '*':
+            result = num1 * num2
+        elif sign == '/':
+            result = num1 / num2
+
+        answer = result if result - int(result) != 0 else int(result)
+    except ZeroDivisionError:
+        answer = 'Нельзя делить на ноль'
+    except Exception as e:
+        answer = str(e)
+
+    update.message.reply_text(answer)
+
+
 def main():
     mybot = Updater("КЛЮЧ, КОТОРЫЙ НАМ ВЫДАЛ BotFather", request_kwargs=PROXY)
     
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(CommandHandler("planet", get_planet_constellation))
+    dp.add_handler(CommandHandler("calc", calculate))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     
     mybot.start_polling()
