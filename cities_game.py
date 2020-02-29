@@ -1,10 +1,12 @@
 import json
 import os.path
+import random
+from pathlib import Path
 
 CITIES_FILE = 'cities.json'
 
 
-class GameOverException(BaseException):
+class GameOverException(Exception):
     pass
 
 
@@ -26,7 +28,7 @@ class City:
 
 class UserFile:
     def __init__(self, filepath):
-        self.__filepath = filepath
+        self.__filepath = Path(filepath)
 
     def get_filepath(self):
         return self.__filepath
@@ -38,8 +40,8 @@ class UserFile:
                 cities = json.load(user_file)
             return cities
 
-        with open(CITIES_FILE, 'r') as cities_dict:
-            cities['cities'] = json.load(cities_dict)
+        with open(CITIES_FILE, 'r') as cities_file:
+            cities['cities'] = json.load(cities_file)
         return cities
 
     def remove(self):
@@ -54,7 +56,7 @@ class UserFile:
 class User:
     def __init__(self, user_id):
         self.__user_id = user_id
-        self.__file = UserFile(f'users/{self.__user_id}.json')
+        self.__file = UserFile(Path().cwd() / 'users' / f'{self.__user_id}.json')
         self.__data = self.__file.get_data()
 
     def get_file(self):
@@ -64,8 +66,8 @@ class User:
         first_letter = city.get_first_letter()
         last_city = self.__data.get('last_city')
         if last_city is not None:
-           last_city_selected_letter = City(last_city).select_last_letter(self.__data['cities'].keys())
-           if last_city_selected_letter != first_letter:
+            last_city_selected_letter = City(last_city).select_last_letter(self.__data['cities'].keys())
+            if last_city_selected_letter != first_letter:
                 return False
 
         cities_by_letter = self.__data['cities'].get(first_letter)
@@ -78,7 +80,7 @@ class User:
         if not isinstance(cities_by_letter, list) or len(cities_by_letter) < 1:
             raise GameOverException('Игра окончена! Вы победили!')
 
-        return cities_by_letter[0]
+        return random.choice(cities_by_letter)
 
     def delete_city(self, city: City):
         letter = city.get_first_letter()

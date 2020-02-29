@@ -1,3 +1,4 @@
+from collections import defaultdict
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -10,18 +11,16 @@ def parse_cities():
     parser = BeautifulSoup(wiki_html, 'html.parser')
 
     table = parser.find("table", {"class": "standard"})
-    cities_dict = {}
-    for tr in table.find_all('tr')[2:]:
-        city = tr.find_all('td')[2].find('a').text.strip()
+    cities = defaultdict(list)
+    city_name_column_idx = 2
+    without_header_rows = table.find_all('tr')[2:]
+    for tr in without_header_rows:
+        city = tr.find_all('td')[city_name_column_idx].find('a').text.strip()
         first_letter = city[0].lower()
-        if first_letter in cities_dict:
-            cities_dict[first_letter].append(city)
-        else:
-            cities_dict[first_letter] = list()
-            cities_dict[first_letter].append(city)
+        cities[first_letter].append(city)
 
     with open('cities.json', 'w') as cities_file:
-        json.dump(cities_dict, cities_file, ensure_ascii=False)
+        json.dump(cities, cities_file, ensure_ascii=False)
 
 
 if __name__ == '__main__':

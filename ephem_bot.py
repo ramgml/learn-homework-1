@@ -16,7 +16,7 @@ import logging
 import ephem
 from datetime import datetime
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from cities_game import Game
+from cities_game import Game, GameOverException
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
@@ -65,15 +65,15 @@ def get_planet_constellation(bot, update):
 
 
 def cities_game(bot, update):
+    user_id = update.message.from_user.id
+    message = update.message.text.split(maxsplit=1)
+
+    if len(message) < 2:
+        update.message.reply_text('Укажите название города')
+        return
+
     try:
-        user_id = update.message.from_user.id
-        message = update.message.text.split()
-
-        if len(message) < 2:
-            update.message.reply_text('Укажите название города')
-            return
-
-        answer = Game(user_id, ' '.join(message[1:])).start()
+        answer = Game(user_id, message[1]).start()
         update.message.reply_text(answer)
     except Exception as e:
         update.message.reply_text("Что-то пошло не так")
