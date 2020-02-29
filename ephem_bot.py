@@ -16,6 +16,7 @@ import logging
 import ephem
 from datetime import datetime
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from collections import defaultdict
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
@@ -71,25 +72,23 @@ def calculate(bot, update):
         return
 
     expression = ''.join(message[1:])
-    number = ''
-    expression_list = []
+    decomposed_expression = defaultdict(str)
+    index = 0
     for symbol in expression:
         if symbol.isdigit():
-            number += symbol
+            decomposed_expression[index] += symbol
         else:
-            expression_list.append(number)
-            expression_list.append(symbol)
-            number = ''
-    expression_list.append(number)
+            index += 1
+            decomposed_expression[index] += symbol
+            index += 1
 
     try:
-        if len(expression_list) < 3:
-            raise Exception("Неправильное выражение")
+        if len(decomposed_expression) < 3:
+            raise ValueError("Неправильное выражение")
 
-        num1 = float(expression_list[0])
-        sign = expression_list[1]
-        num2 = float(expression_list[2])
-        result = None
+        num1, sign, num2 = decomposed_expression.values()
+        num1 = float(num1)
+        num2 = float(num2)
 
         if sign == '+':
             result = num1 + num2
@@ -99,11 +98,13 @@ def calculate(bot, update):
             result = num1 * num2
         elif sign == '/':
             result = num1 / num2
+        else:
+            raise ValueError("Неправильное выражение")
 
         answer = result if result - int(result) != 0 else int(result)
     except ZeroDivisionError:
         answer = 'Нельзя делить на ноль'
-    except Exception as e:
+    except ValueError as e:
         answer = str(e)
 
     update.message.reply_text(answer)
