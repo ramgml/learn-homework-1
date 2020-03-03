@@ -16,6 +16,7 @@ import logging
 import ephem
 from datetime import datetime
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from collections import defaultdict
 from cities_game import Game, GameOverException
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
@@ -80,6 +81,52 @@ def cities_game(bot, update):
         raise e
 
 
+def calculate(bot, update):
+    message = update.message.text.split()
+
+    if len(message) < 1:
+        update.message.reply_text("Забыли указать пример")
+        return
+
+    expression = ''.join(message[1:])
+    decomposed_expression = defaultdict(str)
+    index = 0
+    for symbol in expression:
+        if symbol.isdigit():
+            decomposed_expression[index] += symbol
+        else:
+            index += 1
+            decomposed_expression[index] += symbol
+            index += 1
+
+    try:
+        if len(decomposed_expression) < 3:
+            raise ValueError("Неправильное выражение")
+
+        num1, sign, num2 = decomposed_expression.values()
+        num1 = float(num1)
+        num2 = float(num2)
+
+        if sign == '+':
+            result = num1 + num2
+        elif sign == '-':
+            result = num1 - num2
+        elif sign == '*':
+            result = num1 * num2
+        elif sign == '/':
+            result = num1 / num2
+        else:
+            raise ValueError("Неправильное выражение")
+
+        answer = result if result - int(result) != 0 else int(result)
+    except ZeroDivisionError:
+        answer = 'Нельзя делить на ноль'
+    except ValueError as e:
+        answer = str(e)
+
+    update.message.reply_text(answer)
+
+
 def main():
     mybot = Updater("КЛЮЧ, КОТОРЫЙ НАМ ВЫДАЛ BotFather", request_kwargs=PROXY)
     
@@ -87,6 +134,7 @@ def main():
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(CommandHandler("planet", get_planet_constellation))
     dp.add_handler(CommandHandler("cities", cities_game))
+    dp.add_handler(CommandHandler("calc", calculate))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
 
     mybot.start_polling()
